@@ -54,7 +54,7 @@ var flwebgl;
 				this.lines = [];
 				this.lines2 = [];
 				var sgf = player.getScenegraphFactory();
-				for(var i=0; i<32; i++) {
+				for(var i=0; i<48; i++) {
 					var line = sgf.createMovieClipInstance("Block");
 					player.getStage().addChild(line);
 					line.setVisible(false);
@@ -92,7 +92,7 @@ var flwebgl;
 							buffer = that.lines;
 							currentIndex = linesIndex;
 							scale = 10.95;
-							document.querySelector('#messageBox').value = "Route score: " + event.data.score;
+							document.querySelector('#messageBox').innerHTML = "Route score: " + Math.round(event.data.score);
 						} 
 						else {
 							buffer = that.lines2;
@@ -520,7 +520,7 @@ var flwebgl;
 					}
 					*/
 					
-					for(var i=0; i<32; i++) {
+					for(var i=0; i<48; i++) {
 						this.lines[i].setVisible(false);
 						this.lines2[i].setVisible(false);
 					}
@@ -687,6 +687,7 @@ var flwebgl;
 					return false;
 				}
 			
+				/*
 				canvas.onmousedown = function (e) {
 					var boundingRect = this.defend.getBounds(this);
 					if (isMouseOverSymbol(e.offsetX, e.offsetY, boundingRect)) {
@@ -710,6 +711,7 @@ var flwebgl;
 						this.attack.gotoAndStop(1);
 					}
 				}.bind(this);
+				*/
 			
 				var that = this;
 			
