@@ -748,14 +748,5 @@ var flwebgl;
 		actions.mc_Button32Attack_0_0 = function() {
 			this.stop();
 		}
-		actions.mc_Button32Defend_0_0 = function() {
-			this.stop();
-		}
-		actions.mc_Button32Spawn_0_0 = function() {
-			this.stop();
-		}
-		actions.mc_Button32Work_0_0 = function() {
-			this.stop();
-		}
 	})(flwebgl.actions || (flwebgl.actions = {}));
 })(flwebgl || (flwebgl = {}));
