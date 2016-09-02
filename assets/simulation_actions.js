@@ -82,9 +82,11 @@ var flwebgl;
 					line.setLocalTransform(m1);
 				}
 				
-				this.simulate = function () {
+				this.dijkstra = function(start, target) {
 					var that = this;
 					simulator.onmessage = function(event){
+						if(!event.data)
+							return;
 						var type = event.data.type;
 						if(type == "finalist") {
 							buffer = that.lines;
@@ -95,6 +97,8 @@ var flwebgl;
 							buffer = that.lines2;
 							currentIndex = linesIndex2;
 						}
+						
+						document.querySelector('#messageBox').value = "Route score: " + event.data.score;
 						
 						var linesToDraw = event.data.lines;
 						
@@ -135,8 +139,7 @@ var flwebgl;
 							costToStop: 0
 						};
 					}
-			
-					var target = network["468,130"];
+					
 					// State: bunnyId -> bunnyData
 					var state = {};
 					
@@ -144,8 +147,11 @@ var flwebgl;
 					var gasPerKm = document.getElementById('gasPerKm').value;
 					var busSpeed = document.getElementById('busSpeed').value;
 			
-					return simulator.postMessage( { func: 'dijkstra', arguments: [ this.firstSelected()._node, target, bunnyInfo, timeWorth, gasPerKm, busSpeed ] } );
-					
+					return simulator.postMessage( { func: 'dijkstra', arguments: [ start, target, bunnyInfo, timeWorth, gasPerKm, busSpeed ] } );
+				}
+				
+				this.simulate = function () {
+			
 					var bus = this.bus;
 					var transporterBunnies = this.transporterBunnies();
 					var that = this;
@@ -410,17 +416,21 @@ var flwebgl;
 					*/
 			
 					this.network = network;
-					
-					if (typeof(simulator) == "undefined") {
-						simulator = new Worker("assets/dijkstra.js");
+					resetSimulator();
+					//this.spawnBunny(e.offsetX, e.offsetY, 0.1);
+				}
+				
+				function resetSimulator() {
+					if (typeof(simulator) != "undefined") {
+						simulator.terminate();
 					}
 					
+					simulator = new Worker("assets/dijkstra.js");
 					simulator.postMessage({ network: this.network });
-					
-					//this.spawnBunny(e.offsetX, e.offsetY, 0.1);
 				}
 			
 				canvas.onclick = function (e) {
+					/*
 					if (isMouseOverSymbol(e.offsetX, e.offsetY, this.work.getBounds(this))) {
 						this.mode = SET_WORK;
 						for (var i in this.bunnies) {
@@ -471,6 +481,7 @@ var flwebgl;
 							this.moveToNode(bunny, target);
 						}
 						*/
+						/*
 					} else if (isMouseOverSymbol(e.offsetX, e.offsetY, this.select.getBounds(this))) {
 						this.mode = SPAWN;
 					//}// else if (isMouseOverSymbol(e.offsetX, e.offsetY, this.attack.getBounds(this))) {
@@ -507,12 +518,51 @@ var flwebgl;
 							this.spawnBunny(target, 0.2);
 						}
 					}
+					*/
+					
+					for(var i=0; i<32; i++) {
+						this.lines[i].setVisible(false);
+						this.lines2[i].setVisible(false);
+					}
+					
+					resetSimulator();
+			
+					var closestDistance;
+					var closestId;
+					for(var i in this.network) {
+						var node = this.network[i];
+						var deltaX = e.offsetX - node.point[0];
+						var deltaY = e.offsetY - node.point[1];
+						var distance = Math.sqrt( Math.pow(deltaX, 2) + Math.pow(deltaY, 2) );
+						if(!closestDistance || distance < closestDistance) {
+							closestId = i;
+							closestDistance = distance;
+						}
+					}
+					
+					
+					
+					var start = network[closestId];
+					var target = network["468,130"];
+					
+					this.dijkstra(start, target);
+					
+					for(var i in this.bunnies) {
+						if(this.bunnies[i]._node.hash == closestId)
+							this.selectBunny(this.bunnies[i]);
+						else
+							this.unSelectBunny(this.bunnies[i]);
+					}
 				}.bind(this);
 			
 				this.selectBunny = function (bunny) {
-					console.log("CLICK BUNNY at " + bunny._node.hash);
 					var s = bunny.getChildren()[0];
 					s.setVisible(!s.isVisible());
+				}
+				
+				this.unSelectBunny = function (bunny) {
+					var s = bunny.getChildren()[0];
+					s.setVisible(false);
 				}
 			
 				this.hideBunny = function (bunny) {

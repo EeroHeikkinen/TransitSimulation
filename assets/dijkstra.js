@@ -77,10 +77,10 @@ function dijkstra(start, target, state, timeWorth, gasCost, busSpeed) {
 			if(totalBenefit > mostBenefit) {
 				mostBenefit = totalBenefit;
 				
-				self.postMessage({type:"finalist", lines:lines});
+				self.postMessage({type:"finalist", lines:lines, score: totalBenefit});
 			}
 			else {
-				self.postMessage({type:"buffer", lines:lines});
+				self.postMessage({type:"buffer", lines:lines });
 			}
 
 			continue;

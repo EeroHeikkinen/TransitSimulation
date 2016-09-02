@@ -81,9 +81,21 @@
 	</head>
 	<body onload="loadContent();">     
 		<div style="float: left">
+			<div id="messageBox" style="
+			    position: absolute;
+			    bottom: 10px;
+			    background: rgba(0, 0, 0, 0.301961);
+			    font-size: 40px;
+			    padding: 20px;
+			    padding-left: 40px;
+			    padding-right: 40px;
+			    width: 916px;
+			    color: #fff;
+			    font-family: Arial;
+			">Click the map to find the most profitable bus route</div>
 			<canvas id="canvas" style="border: none;"></canvas>
 		</div>
-		<div style="float: right; width: 300px;">
+		<div style="float: right; width: 230px; display: none;">
 			Value of Bunnies Time:<br/>
 			<input id="timeWorth" type="range" min="0" max="100" value="10" 
 	step="1" oninput="outputUpdate(value)"	/><output for="timeWorth" id="timeWorthValue">10 € / h</output><br/>
@@ -96,7 +108,7 @@
 			
 			<button id="toggleCar" style="display: none;">Toggle Car</button>
 			<button id="moveMode" style="display:none;">Move</button>
-			<button id="simulate">Simulate</button>
+			<button id="simulate" style="display: none;">Simulate</button>
 		</div>
 
 
