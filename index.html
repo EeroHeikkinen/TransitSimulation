@@ -1,5 +1,106 @@
+<!DOCTYPE html>
 <html>
-<body>
-Placeholder
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>simulation</title>
+		<script src="libs/flwebgl-0.2.min.js"></script>
+		<script src="assets/simulation_actions.js?1472727140955"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.0/TweenMax.min.js"></script>
+		<script>
+			var player, result = flwebgl.Player.S_OK;
+			var atlasList = [], content = undefined;
+			
+			function loadContent() {
+				getAsset("assets/simulation.json?1472727140955", function (response) {content = JSON.parse(response); assetLoaded(); });
+				getAsset("assets/simulation_atlas.json?1472727140955", function (response) { atlasList.push({json:JSON.parse(response), image:"assets/simulation_atlas.png?1472727140955"}); assetLoaded(); });
+			}
+			
+			function assetLoaded() {
+				if (atlasList.length == 1 && content) {
+					var canvas = document.getElementById("canvas");
+					player = new flwebgl.Player();
+
+					//Create textureatlas object for all the textures which you have
+					var textureAtlasList = [];
+					for (var i = 0; i < atlasList.length; i++) {
+						textureAtlasList.push(new flwebgl.TextureAtlas(atlasList[i].json, atlasList[i].image));
+					}
+					
+					result = player.init(canvas, content, textureAtlasList, handleComplete);
+					
+					if(result === flwebgl.Player.E_CONTEXT_CREATION_FAILED) {
+						document.getElementById("err_nowebglsupport").style.display="block";
+						return;
+					} else if(result === flwebgl.Player.E_REQUIRED_EXTENSION_NOT_PRESENT) {
+						document.getElementById("err_extensionnotpresent").style.display="block";
+						return;
+					}
+					
+					//Resize the canvas and reset the viewport
+					var w = player.getStageWidth();
+					var h = player.getStageHeight();
+					canvas.width = w;
+					canvas.height = h;
+					player.setViewport(new flwebgl.geom.Rect(0, 0, w, h));				
+				}
+			}
+			
+			function getAsset(url, callbk) {
+				if (!window.XMLHttpRequest) {
+					document.getElementById("err_nowebglsupport").style.display="block";
+					return;
+				}
+				
+				var req = new XMLHttpRequest();
+				req.onreadystatechange = function() {
+					if (req.readyState == 4 && req.status == 200)
+						callbk(req.responseText);
+				};
+				req.open("GET", url, true);
+				req.send();
+			}
+			
+			function handleComplete() {
+				if(result === flwebgl.Player.S_OK) {
+					player.play();
+					
+					// ==> This is a good place to add code <==
+				}
+			}
+
+			function outputUpdate(vol) {
+				document.querySelector('#timeWorthValue').value = vol + " € / h";
+			}
+			function gasPerKmUpdate(vol) {
+				document.querySelector('#gasPerKmValue').value = vol + " € / km";
+			}
+			function busSpeedUpdate(vol) {
+				document.querySelector('#busSpeedValue').value = vol + " km / h";
+			}
+		</script>	
+	</head>
+	<body onload="loadContent();">     
+		<div style="float: left">
+			<canvas id="canvas" style="border: none;"></canvas>
+		</div>
+		<div style="float: right; width: 300px;">
+			Value of Bunnies Time:<br/>
+			<input id="timeWorth" type="range" min="0" max="100" value="10" 
+	step="1" oninput="outputUpdate(value)"	/><output for="timeWorth" id="timeWorthValue">10 € / h</output><br/>
+			Bus operating price:<br/>
+			<input id="gasPerKm" type="range" min="0" max="10" value="0.5" 
+	step="0.1" oninput="gasPerKmUpdate(value)"	/><output for="gasPerKm" id="gasPerKmValue">0.5 € / km</output><br/>
+			Speed of Bus:<br/>
+			<input id="busSpeed" type="range" min="0" max="100" value="20" 
+	step="1" oninput="busSpeedUpdate(value)"/><output for="busSpeed" id="busSpeedValue">20 km / h</output><br/>
+			
+			<button id="toggleCar" style="display: none;">Toggle Car</button>
+			<button id="moveMode" style="display:none;">Move</button>
+			<button id="simulate">Simulate</button>
+		</div>
+
+
+		<div class="error" id="err_nowebglsupport" style="display:none;"><span>Your browser does not support WebGL.</span>&nbsp;<span><a href="http://get.webgl.org">Check WebGL support.</a></span></div>
+		<div class="error" id="err_extensionnotpresent" style="display:none;">A required WebGL extension is not supported by your browser.</div>
+	</body>
 </html>
