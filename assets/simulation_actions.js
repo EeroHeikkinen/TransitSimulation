@@ -92,13 +92,13 @@ var flwebgl;
 							buffer = that.lines;
 							currentIndex = linesIndex;
 							scale = 10.95;
+							document.querySelector('#messageBox').value = "Route score: " + event.data.score;
 						} 
 						else {
 							buffer = that.lines2;
 							currentIndex = linesIndex2;
 						}
-						
-						document.querySelector('#messageBox').value = "Route score: " + event.data.score;
+					
 						
 						var linesToDraw = event.data.lines;
 						
